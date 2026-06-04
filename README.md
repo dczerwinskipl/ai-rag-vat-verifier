@@ -9,7 +9,7 @@ The engine classifies invoice lines against a category catalogue, compares the d
 Invoice line (description, supplier, declared VAT rate)
         │
         ▼
-Embedding model (Ollama / nomic-embed-text-v2-moe)
+Embedding model (Ollama / qwen3-embedding:0.6b)
         │  cosine similarity against in-memory category embeddings
         ▼
 Category match  ──────────────────────────────────────────────────┐
@@ -39,7 +39,7 @@ Evaluation verdict
 
 - .NET 10 SDK
 - [Ollama](https://ollama.com) — either via Docker (Windows/Linux) or native (macOS)
-- Embedding model: `nomic-embed-text-v2-moe` (fallback: `bge-m3`)
+- Embedding model: `qwen3-embedding:0.6b` (fallback: `nomic-embed-text-v2-moe`, requires Ollama ≥ 0.6)
 - Docker with NVIDIA GPU support if running Ollama in a container on Windows
 
 ## Set up Ollama
@@ -57,14 +57,14 @@ docker compose up -d
 **macOS (native Ollama):**
 
 ```bash
-ollama pull nomic-embed-text-v2-moe
+ollama pull qwen3-embedding:0.6b
 ```
 
 The model is multilingual and handles mixed Polish/English invoice text.
-Fallback if the primary model is unavailable:
+Fallback if the primary model is unavailable (works on Ollama 0.5+):
 
 ```bash
-ollama pull bge-m3
+ollama pull nomic-embed-text-v2-moe
 ```
 
 ## Run the API
@@ -143,7 +143,7 @@ The critical test case that must never produce a false low-severity result: an i
   "Provider": "Ollama",
   "Ollama": {
     "Endpoint": "http://localhost:11434",
-    "EmbeddingModel": "nomic-embed-text-v2-moe"
+    "EmbeddingModel": "qwen3-embedding:0.6b"
   }
 }
 ```
@@ -181,7 +181,6 @@ Custom commands are available in `.claude/commands/`:
 
 | Command | Purpose |
 | :------ | :------ |
-| `implement-vat-evaluator` | Implements the real evaluation engine (embeddings + cosine similarity) |
 | `rag-spec-writer` | Drafts a RAG architecture spec |
 | `rag-implementer` | Executes an implementation plan step by step |
 | `rag-reviewer` | Reviews a completed RAG implementation |
@@ -190,7 +189,7 @@ Custom commands are available in `.claude/commands/`:
 Run a command:
 
 ```text
-/implement-vat-evaluator
+/rag-spec-writer
 ```
 
 ### GitHub Copilot
@@ -212,10 +211,9 @@ Key constraints to include in any Copilot prompt for this repo:
 
 ## Next step
 
-Implement the real evaluation engine:
+Extend the evaluation engine — add test data, tune thresholds, or spec the next RAG capability:
 
 ```text
-/implement-vat-evaluator
+/rag-test-data-writer
+/rag-spec-writer
 ```
-
-This wires `IEmbeddingGenerator<string, Embedding<float>>` to the in-memory category catalogue, performs cosine similarity search at request time, and maps results to the four-field verdict.

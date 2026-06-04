@@ -17,8 +17,8 @@ These are already in use and should be treated as defaults unless the spec expli
 | Runtime                    | .NET 10 Minimal API       | No layered architecture, no MediatR, no CQRS                                       |
 | LLM / AI abstraction       | `Microsoft.Extensions.AI` | Use `IEmbeddingGenerator<string, Embedding<float>>` and `IChatClient` abstractions |
 | Ollama client              | `OllamaSharp`             | Do NOT use the deprecated `Microsoft.Extensions.AI.Ollama` package                 |
-| Embedding model (primary)  | `nomic-embed-text-v2-moe` | Via Ollama                                                                         |
-| Embedding model (fallback) | `bge-m3`                  | Via Ollama                                                                         |
+| Embedding model (primary)  | `qwen3-embedding:0.6b`    | Via Ollama; requires Ollama ≥ 0.6                                                  |
+| Embedding model (fallback) | `nomic-embed-text-v2-moe` | Via Ollama; works on Ollama 0.5+                                                   |
 | Vector store               | In-memory                 | No external DB yet; use `Microsoft.Extensions.AI.VectorData` in-memory store       |
 | Inference server           | Ollama                    | Running locally via Docker Compose (`docker/ollama/`)                              |
 | Preferred LLM model family | Qwen2.5                   | Qwen2.5-7B or Qwen2.5-3B for testing; good multilingual support (Polish content)   |

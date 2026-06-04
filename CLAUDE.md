@@ -75,13 +75,13 @@ Use local Ollama as the first provider.
 Preferred model:
 
 ```text
-nomic-embed-text-v2-moe
+qwen3-embedding:0.6b
 ```
 
-Fallback:
+Fallback (requires Ollama 0.5+, works without the 0.6 upgrade):
 
 ```text
-bge-m3
+nomic-embed-text-v2-moe
 ```
 
 Use `Microsoft.Extensions.AI` abstractions where practical. Use `OllamaSharp` as the concrete local provider. Do not use deprecated `Microsoft.Extensions.AI.Ollama`.
