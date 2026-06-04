@@ -194,20 +194,28 @@ Run a command:
 
 ### GitHub Copilot
 
-Open the repository in VS Code or a JetBrains IDE with the Copilot extension enabled.
-The `CLAUDE.md` file at the root documents scope, constraints, and the decision model — paste its contents into a Copilot Chat session as context when starting a new task:
+Open the repository in VS Code with the Copilot extension enabled.
+Workspace-level instructions are loaded automatically from `.github/copilot-instructions.md`.
 
-```
-@workspace /explain
-```
+**Agents** — invoke with `@agent-name` in Copilot Chat:
 
-Or attach `CLAUDE.md` directly to a chat message.
+| Agent | Purpose |
+| :---- | :------ |
+| `@rag-spec-writer` | Research RAG options, produce spec + diagram + implementation plan |
+| `@rag-implementer` | Execute an implementation plan step by step |
+| `@rag-reviewer` | Review a completed implementation against its spec |
+| `@rag-test-data-writer` | Generate Polish VAT invoice test data |
 
-Key constraints to include in any Copilot prompt for this repo:
-- .NET 10 Minimal API, no Clean Architecture layers
-- `Microsoft.Extensions.AI` abstractions, `OllamaSharp` as the local provider
-- No `Microsoft.Extensions.AI.Ollama` (deprecated)
-- Provider registration in `Program.cs` only — no provider types in business logic
+**Prompt files** — invoke with `/command-name` in Copilot Chat (same workflows, slash-command form):
+
+| Command | Purpose |
+| :------ | :------ |
+| `/rag-spec-writer` | Same as the agent above |
+| `/rag-implementer` | Same as the agent above |
+| `/rag-reviewer` | Same as the agent above |
+| `/rag-test-data-writer` | Same as the agent above |
+
+Attach the relevant `instructions/` files for full domain context (Polish VAT, KSeF, project stack).
 
 ## Next step
 
