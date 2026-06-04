@@ -1,0 +1,53 @@
+[
+  {
+    "id": "case-001",
+    "name": "Software development service with 23 VAT should be OK after category is implemented",
+    "input": {
+      "invoiceLineId": "line-001",
+      "description": "Usługa programistyczna maj 2026",
+      "supplierName": "Example Software House Sp. z o.o.",
+      "supplierIndustry": "IT services",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-002",
+    "name": "Ambiguous Chopin item should not be treated as a confident category match",
+    "input": {
+      "invoiceLineId": "line-002",
+      "description": "Chopin",
+      "supplierName": "Empik",
+      "supplierIndustry": "Retail",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Alert",
+      "categoryMatchStatus": "Ambiguous",
+      "vatValidationStatus": "Unknown",
+      "reasonCode": "CategoryAmbiguousWithDifferentVatRates"
+    }
+  },
+  {
+    "id": "case-003",
+    "name": "Alcohol item with 8 VAT should be critical mismatch",
+    "input": {
+      "invoiceLineId": "line-003",
+      "description": "Wódka Chopin 0,7l",
+      "supplierName": "Hurtownia Alkoholi ABC",
+      "supplierIndustry": "Alcohol wholesale",
+      "invoiceVatRate": 8
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  }
+]

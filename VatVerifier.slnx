@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/VatVerifier.Api/VatVerifier.Api.csproj" />
+  <Project Path="tests/VatVerifier.EvaluationTests/VatVerifier.EvaluationTests.csproj" />
+</Solution>

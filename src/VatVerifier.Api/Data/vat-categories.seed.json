@@ -1,0 +1,90 @@
+[
+  {
+    "categoryId": "software_it_services_23",
+    "name": {
+      "pl": "Usługi programistyczne i IT",
+      "en": "Software and IT services"
+    },
+    "expectedVatRate": 23,
+    "description": {
+      "pl": "Usługi tworzenia, utrzymania i rozwoju oprogramowania, konsulting techniczny, development aplikacji.",
+      "en": "Software development, maintenance, technical consulting and application development services."
+    },
+    "positiveExamples": [
+      "Usługa programistyczna maj 2026",
+      "Software development services",
+      "Utrzymanie aplikacji",
+      "Konsultacje IT"
+    ],
+    "negativeExamples": [
+      "Szkolenie stacjonarne",
+      "Sprzedaż laptopa",
+      "Książka o programowaniu"
+    ],
+    "typicalSuppliers": [
+      "software house",
+      "IT services",
+      "freelancer IT",
+      "firma programistyczna"
+    ]
+  },
+  {
+    "categoryId": "alcohol_spirits_23",
+    "name": {
+      "pl": "Napoje alkoholowe wysokoprocentowe",
+      "en": "Spirits and strong alcoholic beverages"
+    },
+    "expectedVatRate": 23,
+    "description": {
+      "pl": "Wódka, whisky, gin, rum, likiery oraz inne napoje alkoholowe wysokoprocentowe.",
+      "en": "Vodka, whisky, gin, rum, liqueurs and other strong alcoholic beverages."
+    },
+    "positiveExamples": [
+      "Wódka Chopin 0,7l",
+      "Chopin Vodka 0.7l",
+      "Finlandia Vodka 0.5l",
+      "Whisky Jack Daniel's 0.7l"
+    ],
+    "negativeExamples": [
+      "Chopin CD",
+      "Książka Chopin",
+      "Bilet na koncert chopinowski",
+      "Chopin book"
+    ],
+    "typicalSuppliers": [
+      "hurtownia alkoholi",
+      "alcohol wholesale",
+      "sklep monopolowy",
+      "liquor store",
+      "alcohol distributor"
+    ]
+  },
+  {
+    "categoryId": "books_5",
+    "name": {
+      "pl": "Książki",
+      "en": "Books"
+    },
+    "expectedVatRate": 5,
+    "description": {
+      "pl": "Książki drukowane i publikacje książkowe, zwykle identyfikowane przez tytuł, autora, wydawnictwo albo ISBN.",
+      "en": "Printed books and book publications, usually identified by title, author, publisher or ISBN."
+    },
+    "positiveExamples": [
+      "Książka Chopin biografia",
+      "Podręcznik programowania C#",
+      "Printed book ISBN"
+    ],
+    "negativeExamples": [
+      "CD muzyczny",
+      "Wódka Chopin 0,7l",
+      "Bilet na koncert"
+    ],
+    "typicalSuppliers": [
+      "księgarnia",
+      "wydawnictwo",
+      "bookstore",
+      "publisher"
+    ]
+  }
+]

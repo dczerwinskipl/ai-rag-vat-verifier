@@ -1,0 +1,13 @@
+bin/
+obj/
+.vs/
+.vscode/.vs/
+TestResults/
+coverage/
+.env
+.env.*
+!*.example
+*.user
+*.suo
+.DS_Store
+.claude/settings.local.json

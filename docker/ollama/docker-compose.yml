@@ -1,0 +1,22 @@
+services:
+  ollama:
+    # qwen3-embedding:0.6b requires Ollama >= 0.6.
+    # Current container is 0.5.11 — update by running:
+    #   docker compose pull
+    #   docker compose up -d
+    image: ollama/ollama:latest
+    container_name: vat-verifier-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  ollama:
