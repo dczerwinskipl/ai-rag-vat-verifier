@@ -47,5 +47,8 @@ public enum EvaluationReasonCode
     VatMismatch,
     CategoryNotMatched,
     InsufficientData,
-    EngineNotImplemented
+    EngineNotImplemented,
+    ReverseChargeMissing,
+    ReverseChargeUnexpected,
+    GtuCategoryMismatch
 }

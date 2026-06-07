@@ -162,7 +162,31 @@ Populate from:
 
 ---
 
-## Step 8 — Inline review checks
+## Step 8 — Update README
+
+After the implementation summary is written, update the two project-state sections in `README.md` to reflect the actual current state of the repository. These sections describe the project to developers — they must stay accurate after every implementation run.
+
+### 8a — Project layout
+
+Read the current "Project layout" section from `README.md`. Then scan the actual file system:
+- Glob `src/**/*.cs` and `src/**/` for new directories or files added during this implementation
+- Glob `tests/**/*.cs` and `tests/**/` for new test files or directories
+
+Update the ASCII tree in "Project layout" to include any new directories or notable files that were added. Preserve the existing style and depth. Remove entries that no longer exist. Do not list every file — keep it at the level of directories and one or two representative files per directory, matching the original style.
+
+### 8b — Configuration
+
+Read `src/VatVerifier.Api/appsettings.json`. Compare its current structure to the JSON snippet in the "Configuration" section of `README.md`.
+
+If new configuration sections or keys were added during this implementation, update the snippet to reflect the current structure. Preserve key comments or descriptions already present in the README section. Do not include values that are credentials or environment-specific.
+
+### 8c — Write
+
+If either section changed, write the updated `README.md`. If neither section needed updating, note "README up to date" and continue.
+
+---
+
+## Step 9 — Inline review checks
 
 Run the following checks and record pass/fail in the summary:
 
@@ -173,6 +197,7 @@ Run the following checks and record pass/fail in the summary:
 | New features have tests | No plan step classified `Missing` in Step 6 (or each missing has a documented exception) |
 | No unconfirmed deviations | Either no deviation-log.md exists, or every entry in it has a `Confirmed by` field |
 | No regressions | Tests that passed in baseline still pass |
+| README up to date | Project layout and Configuration sections reflect current `src/` structure and `appsettings.json` |
 
 If all checks pass: add `Review: PASS` to the summary.
 
@@ -180,7 +205,7 @@ If any check fails → trigger **Review Gate** (see `rag-implementation-gate.ins
 
 ---
 
-## Step 9 — Present summary
+## Step 10 — Present summary
 
 Show the user the path to `implementation-summary.md` and the review check table.
 
@@ -199,4 +224,5 @@ A complete run produces:
 1. Source code and test changes in `src/` and `tests/` directories
 2. `docs/spec/<slug>/implementation-summary.md`
 3. `docs/spec/<slug>/deviation-log.md` — only if one or more deviations were confirmed
-4. A final build and test run confirming green state (or a documented exception)
+4. Updated `README.md` (Project layout and Configuration sections) — or a note that it was already up to date
+5. A final build and test run confirming green state (or a documented exception)

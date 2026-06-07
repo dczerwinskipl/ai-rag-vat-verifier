@@ -32,7 +32,7 @@ Read these files before executing any workflow step:
 
 - `CLAUDE.md` — current project scope and explicit deferrals (required)
 - `instructions/project/vat-verifier/rag-context.instructions.md` — project constraints, current stack, hardware (required)
-- `docs/spec/` directory listing via Glob `docs/spec/*/` — determines next spec ordinal (optional; assume ordinal `01` if absent)
+- `docs/spec/` directory listing via Glob `docs/spec/*/` — determines next spec ordinal (required; run the Glob even if you believe no specs exist; if the Glob returns no results, ordinal is `01`)
 
 ## Conditional load
 
@@ -48,7 +48,7 @@ Read these files only when the spec topic requires deeper domain knowledge. Do n
 | RAG topic / goal                                                             | Required    | Invocation `$ARGUMENTS` or first user message                               | Ask before proceeding                                        |
 | `CLAUDE.md`                                                                  | Required    | File read                                                                   | Block — cannot assess scope without it                       |
 | `instructions/project/vat-verifier/rag-context.instructions.md`             | Required    | File read                                                                   | Continue; note reduced context in spec                       |
-| `docs/spec/*/` listing                                                       | Optional    | Glob                                                                        | Assume ordinal `01`                                          |
+| `docs/spec/*/` listing                                                       | Required    | Glob — run before any workflow step                                         | If Glob returns no results, ordinal is `01`; if Glob fails, stop and report |
 | Files under `src/`                                                           | Optional    | Read selectively when current implementation state affects option viability | Skip silently                                                |
 | `instructions/project/vat-verifier/polish-vat-domain.instructions.md`       | Conditional | File read when VAT classification or tax rate correctness is in scope       | Skip; note reduced context for VAT-relevant topics           |
 | `instructions/project/vat-verifier/polish-invoice-structure.instructions.md`| Conditional | File read when invoice data structure, field formats, or KSeF is in scope   | Skip; note reduced context for invoice structure topics      |

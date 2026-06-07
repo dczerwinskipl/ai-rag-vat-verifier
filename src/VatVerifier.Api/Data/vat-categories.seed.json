@@ -14,42 +14,58 @@
       "Usługa programistyczna maj 2026",
       "Software development services",
       "Utrzymanie aplikacji",
-      "Konsultacje IT"
+      "Konsultacje IT",
+      "Doradztwo technologiczne",
+      "Konsultacje IT dla biznesu"
     ],
     "negativeExamples": [
       "Szkolenie stacjonarne",
       "Sprzedaż laptopa",
-      "Książka o programowaniu"
+      "Książka o programowaniu",
+      "Gaz techniczny argon 10kg butla",
+      "Kawa mielona Jacobs 250g",
+      "Mleko UHT 3,2% 1L",
+      "Woda mineralna Cisowianka 0,5L"
     ],
     "typicalSuppliers": [
       "software house",
       "IT services",
       "freelancer IT",
       "firma programistyczna"
-    ]
+    ],
+    "gtuCodes": ["GTU_12"],
+    "rateVariants": null
   },
   {
     "categoryId": "alcohol_spirits_23",
     "name": {
-      "pl": "Napoje alkoholowe wysokoprocentowe",
-      "en": "Spirits and strong alcoholic beverages"
+      "pl": "Napoje alkoholowe",
+      "en": "Alcoholic beverages"
     },
     "expectedVatRate": 23,
     "description": {
-      "pl": "Wódka, whisky, gin, rum, likiery oraz inne napoje alkoholowe wysokoprocentowe.",
-      "en": "Vodka, whisky, gin, rum, liqueurs and other strong alcoholic beverages."
+      "pl": "Wszelkie napoje alkoholowe: wódka, whisky, gin, rum, likiery, wino, piwo oraz inne napoje zawierające alkohol. Stawka 23% bez wyjątku – alkohol nigdy nie kwalifikuje się do obniżonych stawek żywnościowych. Obejmuje wszystkie rodzaje wina (czerwone, białe, różowe, musujące) oraz wszystkie typy piwa. Wino i piwo to napoje alkoholowe, nie artykuły spożywcze.",
+      "en": "All alcoholic beverages: vodka, whisky, gin, rum, liqueurs, wine, beer and other drinks containing alcohol. Rate 23% without exception – alcohol never qualifies for reduced food rates. Includes all wine varieties (red, white, rosé, sparkling) and all beer types. Wine and beer are alcoholic beverages, not food products, regardless of culinary associations."
     },
     "positiveExamples": [
       "Wódka Chopin 0,7l",
       "Chopin Vodka 0.7l",
       "Finlandia Vodka 0.5l",
-      "Whisky Jack Daniel's 0.7l"
+      "Whisky Jack Daniel's 0.7l",
+      "Wino czerwone Bordeaux 0,75l",
+      "Wino białe Chardonnay 0,75l",
+      "Szampan Moët i Chandon 0,75l",
+      "Piwo Tyskie 500ml",
+      "Piwo rzemieślnicze IPA 0,5l"
     ],
     "negativeExamples": [
-      "Chopin CD",
-      "Książka Chopin",
-      "Bilet na koncert chopinowski",
-      "Chopin book"
+      "Usługa programistyczna",
+      "Reklama Google Ads",
+      "Naprawa urządzeń elektrycznych",
+      "Materiały biurowe",
+      "Transport towarów",
+      "Mleko UHT 3,2% 1L",
+      "Woda mineralna Cisowianka 0,5L"
     ],
     "typicalSuppliers": [
       "hurtownia alkoholi",
@@ -57,34 +73,551 @@
       "sklep monopolowy",
       "liquor store",
       "alcohol distributor"
-    ]
+    ],
+    "gtuCodes": ["GTU_01"],
+    "rateVariants": null
   },
   {
     "categoryId": "books_5",
     "name": {
-      "pl": "Książki",
-      "en": "Books"
+      "pl": "Książki i publikacje",
+      "en": "Books and publications"
     },
     "expectedVatRate": 5,
     "description": {
-      "pl": "Książki drukowane i publikacje książkowe, zwykle identyfikowane przez tytuł, autora, wydawnictwo albo ISBN.",
-      "en": "Printed books and book publications, usually identified by title, author, publisher or ISBN."
+      "pl": "Książki drukowane i publikacje książkowe, e-booki oraz cyfrowe wydania gazet i magazynów. Zwykle identyfikowane przez tytuł, autora, wydawnictwo lub ISBN.",
+      "en": "Printed books and book publications, e-books and digital editions of newspapers and magazines. Usually identified by title, author, publisher or ISBN."
     },
     "positiveExamples": [
       "Książka Chopin biografia",
       "Podręcznik programowania C#",
-      "Printed book ISBN"
+      "Printed book ISBN",
+      "E-book podatkowy 2026"
     ],
     "negativeExamples": [
       "CD muzyczny",
-      "Wódka Chopin 0,7l",
-      "Bilet na koncert"
+      "Bilet na koncert",
+      "Trunek alkoholowy 0,7l"
     ],
     "typicalSuppliers": [
       "księgarnia",
       "wydawnictwo",
       "bookstore",
       "publisher"
+    ],
+    "gtuCodes": null,
+    "rateVariants": null
+  },
+  {
+    "categoryId": "construction_services",
+    "name": {
+      "pl": "Usługi budowlane",
+      "en": "Construction services"
+    },
+    "expectedVatRate": 23,
+    "description": {
+      "pl": "Roboty budowlane, remontowe i montażowe. Stawka 8% dotyczy wyłącznie budownictwa mieszkaniowego (do 150 m² lokal, do 300 m² dom). Stawka 23% obowiązuje dla obiektów komercyjnych i przemysłowych.",
+      "en": "Construction, renovation and assembly works. Rate 8% applies only to residential buildings (apartment up to 150 m², house up to 300 m²). Rate 23% applies to commercial and industrial buildings."
+    },
+    "positiveExamples": [
+      "Roboty budowlane – podwykonawstwo",
+      "Usługi remontowe budynku",
+      "Prace montażowe instalacji",
+      "Remont mieszkania",
+      "Budowa hali przemysłowej"
+    ],
+    "negativeExamples": [
+      "Sprzedaż materiałów budowlanych",
+      "Wynajem sprzętu budowlanego",
+      "Projekt architektoniczny",
+      "Gaz techniczny argon",
+      "Gazy przemysłowe"
+    ],
+    "typicalSuppliers": [
+      "firma budowlana",
+      "usługi remontowe",
+      "contractor",
+      "construction company",
+      "podwykonawca budowlany"
+    ],
+    "gtuCodes": ["GTU_10"],
+    "rateVariants": [
+      { "rate": 8, "condition": "residential" },
+      { "rate": 23, "condition": "commercial" }
     ]
+  },
+  {
+    "categoryId": "pharmaceuticals_8",
+    "name": {
+      "pl": "Produkty lecznicze i wyroby medyczne",
+      "en": "Pharmaceuticals and medical devices"
+    },
+    "expectedVatRate": 8,
+    "description": {
+      "pl": "Produkty lecznicze dopuszczone do obrotu, wyroby medyczne sklasyfikowane zgodnie z ustawą o wyrobach medycznych. Nie obejmuje suplementów diety ani kosmetyków.",
+      "en": "Licensed medicinal products and medical devices classified under the Medical Devices Act. Does not include dietary supplements or cosmetics."
+    },
+    "positiveExamples": [
+      "Ibuprofen 200mg tabletki",
+      "Ibuprofen 200mg tablets",
+      "Rękawiczki jednorazowe medyczne",
+      "Glukometr z paskami",
+      "Strzykawki jednorazowe 5ml"
+    ],
+    "negativeExamples": [
+      "Krem kosmetyczny",
+      "Sprzęt AGD",
+      "Środek czystości",
+      "Mleko UHT 3,2% 1L"
+    ],
+    "typicalSuppliers": [
+      "apteka",
+      "hurtownia farmaceutyczna",
+      "sklep medyczny",
+      "pharmacy",
+      "medical supplier"
+    ],
+    "gtuCodes": ["GTU_09"],
+    "rateVariants": null
+  },
+  {
+    "categoryId": "medical_services_zw",
+    "name": {
+      "pl": "Usługi medyczne i stomatologiczne",
+      "en": "Medical and dental services"
+    },
+    "expectedVatRate": 0,
+    "description": {
+      "pl": "Usługi opieki zdrowotnej świadczone przez uprawnionych lekarzy, stomatologów, szpitale i przychodnie – zwolnione z VAT (ZW) na podstawie art. 43 ust. 1 pkt 18–19 ustawy o VAT. Nie obejmuje usług wellness, kosmetycznych ani medycyny estetycznej. Wartość 0 reprezentuje stawkę ZW (zwolniony) w tym modelu.",
+      "en": "Healthcare services provided by licensed physicians, dentists, hospitals and clinics — VAT-exempt (ZW) under art. 43(1)(18–19) of the Polish VAT Act. Does not include wellness, cosmetic, or aesthetic medicine services. Rate 0 represents ZW (exempt) in this model."
+    },
+    "positiveExamples": [
+      "Porada lekarska – konsultacja internisty",
+      "Usługa stomatologiczna – leczenie kanałowe",
+      "Wizyta u lekarza specjalisty",
+      "Badanie laboratoryjne krwi",
+      "Konsultacja kardiologiczna"
+    ],
+    "negativeExamples": [
+      "Sprzęt AGD",
+      "Krem kosmetyczny",
+      "Usługi IT dla placówki medycznej",
+      "Szkolenie BHP dla personelu",
+      "Medycyna estetyczna – botoks",
+      "Mleko UHT 3,2% 1L",
+      "Kawa mielona 250g",
+      "Woda mineralna 0,5L"
+    ],
+    "typicalSuppliers": [
+      "klinika",
+      "gabinet lekarski",
+      "szpital",
+      "przychodnia",
+      "dental clinic",
+      "gabinet stomatologiczny"
+    ],
+    "gtuCodes": null,
+    "rateVariants": null
+  },
+  {
+    "categoryId": "food_basic_5",
+    "name": {
+      "pl": "Podstawowe artykuły spożywcze",
+      "en": "Basic food products"
+    },
+    "expectedVatRate": 5,
+    "description": {
+      "pl": "Podstawowe artykuły spożywcze na stawce 5% zgodnie z Załącznikiem nr 10 do ustawy o VAT: świeże pieczywo i wyroby piekarskie, produkty mleczne (mleko, sery, masło, jogurt), świeże i mrożone mięso oraz ryby, jaja, świeże lub mrożone warzywa i owoce. Są to codzienne produkty spożywcze sprzedawane w postaci naturalnej lub minimalnie przetworzonej. Nie obejmuje napojów, kawy, herbaty, przetworzonych przekąsek ani suplementów diety.",
+      "en": "Basic staple foods at 5% under Annex 10 of the Polish VAT Act: fresh bread and bakery products, dairy products (milk, cheese, butter, yogurt), fresh and frozen meat and fish, eggs, fresh or frozen vegetables and fruit. These are everyday staple items sold in their natural or minimally processed form. Does not include beverages, coffee, tea, processed snacks or dietary supplements."
+    },
+    "positiveExamples": [
+      "Chleb razowy 500g",
+      "Mleko UHT 3,2% 1L",
+      "Masło extra 200g",
+      "Pierś z kurczaka świeża 1kg",
+      "Jabłka Gala 1kg",
+      "Ser żółty Gouda 200g",
+      "Jogurt naturalny 400g",
+      "Jaja kurze M 10 szt.",
+      "Filet z łososia świeży 500g",
+      "Mrożone brokuły 450g",
+      "Suplement diety witamina D 1000 IU 60 kaps."
+    ],
+    "negativeExamples": [
+      "Usługa programistyczna",
+      "Reklama Google Ads",
+      "Naprawa urządzeń elektrycznych",
+      "Faktura za transport"
+    ],
+    "typicalSuppliers": [
+      "hurtownia spożywcza",
+      "sklep spożywczy",
+      "supermarket",
+      "food distributor",
+      "Hurtownia Spożywcza Kowalski s.c."
+    ],
+    "gtuCodes": null,
+    "rateVariants": null
+  },
+  {
+    "categoryId": "electronics_23",
+    "name": {
+      "pl": "Elektronika i sprzęt komputerowy",
+      "en": "Consumer electronics and computer hardware"
+    },
+    "expectedVatRate": 23,
+    "description": {
+      "pl": "Urządzenia elektroniczne konsumenckie i sprzęt komputerowy: laptopy, smartfony, tablety, monitory, konsole. GTU_06 wymagany dla JPK. Stawka 23%. Dla faktur ≥15 000 PLN brutto z towarami z listy podatku podzielonego obowiązuje mechanizm podzielonej płatności.",
+      "en": "Consumer electronics and computer hardware: laptops, smartphones, tablets, monitors, gaming consoles. GTU_06 required for SAF-T/JPK. Standard rate 23%. Split payment required for invoices ≥ 15,000 PLN gross for items on the statutory sensitive-goods list."
+    },
+    "positiveExamples": [
+      "Laptop Dell Inspiron 15 i5",
+      "Smartfon Samsung Galaxy S24 256GB",
+      "Tablet Apple iPad 10. generacji",
+      "Monitor LG 27 cali 4K",
+      "Konsola PlayStation 5"
+    ],
+    "negativeExamples": [
+      "Oprogramowanie CRM – licencja miesięczna",
+      "Usługa serwisowa laptopa",
+      "Kabel HDMI 1,5m",
+      "Słuchawki Bluetooth (część zestawu usługowego)",
+      "Gaz techniczny argon 10kg butla",
+      "Gazy przemysłowe",
+      "Kawa mielona Jacobs 250g",
+      "Mleko UHT 3,2% 1L",
+      "Woda mineralna Cisowianka 0,5L"
+    ],
+    "typicalSuppliers": [
+      "sklep elektroniczny",
+      "elektronika hurtowa",
+      "electronics retailer",
+      "sklep komputerowy",
+      "Media Expert Sp. z o.o.",
+      "RTV Euro AGD Sp. z o.o."
+    ],
+    "gtuCodes": ["GTU_06"],
+    "rateVariants": null
+  },
+  {
+    "categoryId": "consulting_legal_23",
+    "name": {
+      "pl": "Usługi prawne, podatkowe i księgowe",
+      "en": "Legal, tax and accounting professional services"
+    },
+    "expectedVatRate": 23,
+    "description": {
+      "pl": "Usługi świadczone wyłącznie przez licencjonowanych prawników, doradców podatkowych i biegłych rewidentów: reprezentacja sądowa, sporządzanie zeznań podatkowych, prowadzenie ksiąg rachunkowych, badanie sprawozdań finansowych, doradztwo compliance. Są to regulowane usługi profesjonalne B2B. Nie obejmuje usług IT, oprogramowania, reklamy, gastronomii ani żadnych towarów fizycznych.",
+      "en": "Professional services delivered exclusively by licensed attorneys, registered tax advisors and certified accountants: court representation, tax return preparation, statutory bookkeeping, financial audit, compliance advisory. Strictly regulated B2B professional services — not general business support, not IT, not advertising, not food, not physical goods of any kind."
+    },
+    "positiveExamples": [
+      "Obsługa prawna spółki",
+      "Usługi doradztwa podatkowego",
+      "Prowadzenie ksiąg rachunkowych",
+      "Audyt finansowy za rok 2025",
+      "Reprezentacja w postępowaniu sądowym",
+      "Rozliczenie roczne podatku PIT/CIT",
+      "Opinia prawna – umowa handlowa"
+    ],
+    "negativeExamples": [
+      "Usługa programistyczna",
+      "Szkolenie e-learningowe",
+      "Projekt architektoniczny",
+      "Usługi IT – wsparcie techniczne",
+      "Wódka Chopin 0,7l",
+      "Laptop Dell XPS",
+      "Kampania reklamowa Google Ads",
+      "Usługa cateringowa",
+      "Prenumerata cyfrowa",
+      "Kawa mielona 250g",
+      "Wizyta lekarska u specjalisty",
+      "Gaz techniczny argon 10kg butla",
+      "Doradztwo ogólne"
+    ],
+    "typicalSuppliers": [
+      "kancelaria prawna",
+      "biuro rachunkowe",
+      "firma doradcza",
+      "law firm",
+      "accounting office",
+      "Kancelaria Adwokacka Jan Wiśniewski"
+    ],
+    "gtuCodes": null,
+    "rateVariants": null
+  },
+  {
+    "categoryId": "food_beverages_8",
+    "name": {
+      "pl": "Przetworzona żywność i napoje bezalkoholowe",
+      "en": "Processed food and non-alcoholic beverages"
+    },
+    "expectedVatRate": 8,
+    "description": {
+      "pl": "Napoje bezalkoholowe w zamkniętych opakowaniach oraz wybrane przetworzone produkty spożywcze objęte Załącznikiem nr 3 do ustawy o VAT: kawa, herbata, soki owocowe, woda mineralna w butelkach, napoje gazowane, cukier, sól kuchenna, suszone zioła i przyprawy, lody. Kategoria obejmuje produkty płynne i utrwalone sklepowe – nie obejmuje podstawowych niezprzetworzonych artykułów spożywczych takich jak świeże pieczywo, mleko surowe, mięso, jaja ani świeże warzywa i owoce (te są objęte stawką 5% wg Załącznika nr 10).",
+      "en": "Non-alcoholic beverages in sealed packaging and specific processed grocery items under Annex 3 of the Polish VAT Act: coffee, tea, fruit juices, bottled mineral water, carbonated soft drinks, sugar, table salt, dried herbs and spices, ice cream. This category covers drinkable products and shelf-stable condiments — NOT basic staple foods such as bread, dairy, fresh meat, eggs or fresh produce (those are 5% under Annex 10)."
+    },
+    "positiveExamples": [
+      "Kawa mielona Jacobs 250g",
+      "Herbata ekspresowa Lipton 100 szt.",
+      "Woda mineralna Żywiec Zdrój 0,5L",
+      "Napój gazowany Coca-Cola 0,33L",
+      "Cukier kryształ 1kg",
+      "Sól kuchenna jodowana 1kg",
+      "Sok pomarańczowy 100% 1L",
+      "Lody waniliowe 500ml"
+    ],
+    "negativeExamples": [
+      "Wódka Chopin 0,7l",
+      "Wino czerwone 0,75l",
+      "Piwo Tyskie 500ml",
+      "Chleb razowy 500g",
+      "Mleko UHT 3,2% 1L",
+      "Ser żółty Gouda 200g",
+      "Masło extra 200g",
+      "Pierś z kurczaka 1kg"
+    ],
+    "typicalSuppliers": [
+      "hurtownia spożywcza",
+      "sklep spożywczy",
+      "dystrybutor napojów",
+      "food distributor",
+      "beverage wholesaler"
+    ],
+    "gtuCodes": null,
+    "rateVariants": null
+  },
+  {
+    "categoryId": "restaurant_catering_8",
+    "name": {
+      "pl": "Usługi gastronomiczne i cateringowe",
+      "en": "Restaurant and catering services"
+    },
+    "expectedVatRate": 8,
+    "description": {
+      "pl": "Usługi gastronomiczne i cateringowe obejmujące przygotowanie i podanie posiłków oraz napojów bezalkoholowych. Stawka 8% dotyczy wyłącznie jedzenia i napojów bezalkoholowych. Alkohol serwowany w restauracji lub na cateringu pozostaje przy stawce 23% i nie należy do tej kategorii.",
+      "en": "Restaurant and catering services covering preparation and serving of food and non-alcoholic beverages. Rate 8% applies only to food and non-alcoholic drinks. Alcohol served at the same event always carries the standard 23% rate and is never part of this category."
+    },
+    "positiveExamples": [
+      "Usługa cateringowa – lunch firmowy",
+      "Catering na imprezę firmową 20 osób",
+      "Obiad w restauracji – posiłek służbowy",
+      "Catering konferencyjny – przerwy kawowe",
+      "Usługa gastronomiczna – wesele"
+    ],
+    "negativeExamples": [
+      "Alkohol serwowany przy posiłku",
+      "Wino do obiadu",
+      "Wino czerwone Merlot 0,75l",
+      "Piwo Tyskie 500ml",
+      "Dostawa sprzętu gastronomicznego",
+      "Wynajem sali bankietowej",
+      "Usługi IT dla restauracji",
+      "Doradztwo biznesowe",
+      "Usługi konsultingowe",
+      "Wódka Chopin 0,7l",
+      "Chleb razowy 500g",
+      "Mleko UHT 3,2% 1L",
+      "Kawa mielona Jacobs 250g",
+      "Woda mineralna Cisowianka 0,5L",
+      "Kampania reklamowa Google Ads",
+      "Gaz techniczny argon 10kg butla"
+    ],
+    "typicalSuppliers": [
+      "restauracja",
+      "catering",
+      "usługi gastronomiczne",
+      "gastronomy",
+      "Catering Premium Sp. z o.o.",
+      "Restauracja Pod Lipami s.c."
+    ],
+    "gtuCodes": null,
+    "rateVariants": null
+  },
+  {
+    "categoryId": "tobacco_23",
+    "name": {
+      "pl": "Wyroby tytoniowe i e-papierosy",
+      "en": "Tobacco products and electronic cigarettes"
+    },
+    "expectedVatRate": 23,
+    "description": {
+      "pl": "Wyroby tytoniowe (papierosy, cygara, tytoń do palenia, snus) oraz elektroniczne papierosy i wkłady do nich. GTU_02 wymagany dla JPK. Stawka podstawowa 23%.",
+      "en": "Tobacco products (cigarettes, cigars, pipe tobacco, snus) and electronic cigarettes with refill cartridges. GTU_02 required for SAF-T/JPK. Standard rate 23%."
+    },
+    "positiveExamples": [
+      "Papierosy Marlboro Red karton",
+      "Cygara Cohiba 25 szt.",
+      "E-papieros IQOS zestaw startowy",
+      "Wkłady tytoniowe IQOS HEETS karton",
+      "Tytoń do palenia Lucky Strike 30g"
+    ],
+    "negativeExamples": [
+      "Wódka Chopin 0,7l",
+      "Kawa mielona 250g",
+      "Zapalniczka gazowa",
+      "Plastry nikotynowe (wyrób medyczny)",
+      "Gaz techniczny argon 10kg butla",
+      "Mleko UHT 3,2% 1L",
+      "Woda mineralna 0,5L"
+    ],
+    "typicalSuppliers": [
+      "sklep monopolowy",
+      "hurtownia tytoniowa",
+      "tobacco distributor",
+      "sklep z e-papierosami",
+      "Dystrybutor Wyrobów Tytoniowych Sp. z o.o."
+    ],
+    "gtuCodes": ["GTU_02"],
+    "rateVariants": null
+  },
+  {
+    "categoryId": "fuel_23",
+    "name": {
+      "pl": "Paliwa i oleje opałowe",
+      "en": "Fuels and heating oils"
+    },
+    "expectedVatRate": 23,
+    "description": {
+      "pl": "Paliwa silnikowe i oleje opałowe: diesel, benzyna, LPG, olej opałowy, paliwo lotnicze. GTU_03 wymagany dla JPK. Stawka 23%. Dla faktur ≥15 000 PLN brutto obowiązuje mechanizm podzielonej płatności.",
+      "en": "Motor fuels and heating oils: diesel, petrol, LPG, heating oil, aviation fuel. GTU_03 required for SAF-T/JPK. Standard rate 23%. Split payment required for invoices ≥ 15,000 PLN gross."
+    },
+    "positiveExamples": [
+      "Olej napędowy ON 500L",
+      "Benzyna bezołowiowa Pb95 200L",
+      "Gaz LPG 100kg",
+      "Olej opałowy lekki 1000L",
+      "Paliwo diesel – tankowanie floty"
+    ],
+    "negativeExamples": [
+      "Olej rzepakowy spożywczy 5L",
+      "Olej silnikowy syntetyczny 5W-30",
+      "Gaz techniczny argon",
+      "Gaz techniczny azot",
+      "Gazy przemysłowe",
+      "Tlen medyczny",
+      "Usługa transportowa",
+      "Wódka 0,7l",
+      "Napój alkoholowy",
+      "Mleko UHT 3,2% 1L",
+      "Kawa mielona 250g"
+    ],
+    "typicalSuppliers": [
+      "stacja paliw",
+      "hurtownia paliw",
+      "fuel distributor",
+      "PKN Orlen S.A.",
+      "BP Polska Sp. z o.o.",
+      "dystrybutor paliw"
+    ],
+    "gtuCodes": ["GTU_03"],
+    "rateVariants": null
+  },
+  {
+    "categoryId": "housing_rental_zw",
+    "name": {
+      "pl": "Wynajem mieszkań i lokali mieszkalnych",
+      "en": "Long-term residential rental"
+    },
+    "expectedVatRate": 0,
+    "description": {
+      "pl": "Długoterminowy wynajem mieszkań i lokali mieszkalnych na cele mieszkaniowe – zwolniony z VAT (ZW) na podstawie art. 43 ust. 1 pkt 36 ustawy o VAT. Nie obejmuje najmu krótkoterminowego (hotel, Airbnb – stawka 8%) ani najmu lokali komercyjnych (stawka 23%). Wartość 0 reprezentuje stawkę ZW (zwolniony) w tym modelu.",
+      "en": "Long-term residential apartment and housing rental for residential purposes — VAT-exempt (ZW) under art. 43(1)(36) of the Polish VAT Act. Does not include short-term rental (hotels, Airbnb — rate 8%) or commercial property rental (rate 23%). Rate 0 represents ZW (exempt) in this model."
+    },
+    "positiveExamples": [
+      "Wynajem mieszkania – najem długoterminowy styczeń 2026",
+      "Czynsz najmu lokalu mieszkalnego",
+      "Najem mieszkania przy ul. Mokotowskiej",
+      "Wynajem kawalerki – umowa na rok"
+    ],
+    "negativeExamples": [
+      "Wynajem biura – lokal komercyjny",
+      "Nocleg hotelowy 3 noce",
+      "Wynajem apartamentu na doby",
+      "Dzierżawa nieruchomości komercyjnej",
+      "Najem hali magazynowej",
+      "Woda mineralna Cisowianka 0,5L",
+      "Kawa mielona 250g",
+      "Mleko UHT 3,2% 1L"
+    ],
+    "typicalSuppliers": [
+      "agencja nieruchomości",
+      "zarządca nieruchomości",
+      "property management",
+      "wynajem mieszkań",
+      "Agencja Nieruchomości Centrum Sp. z o.o.",
+      "Nieruchomości Zarządzanie Jan Nowak"
+    ],
+    "gtuCodes": null,
+    "rateVariants": null
+  },
+  {
+    "categoryId": "digital_publications_5",
+    "name": {
+      "pl": "Publikacje cyfrowe i e-booki",
+      "en": "Digital publications and e-books"
+    },
+    "expectedVatRate": 5,
+    "description": {
+      "pl": "E-booki, cyfrowe wydania gazet, magazynów i czasopism. Od 2022 roku stawka 5% obowiązuje dla publikacji cyfrowych na równi z drukowanymi. Nie obejmuje wkładek reklamowych ani treści marketingowych dołączanych do wydań.",
+      "en": "E-books, digital editions of newspapers, magazines and periodicals. From 2022, the 5% rate applies to digital publications on equal terms with printed ones. Does not include advertising inserts or marketing content bundled with publications."
+    },
+    "positiveExamples": [
+      "E-book Podręcznik rachunkowości 2026",
+      "Prenumerata cyfrowa Gazety Wyborczej – miesięczna",
+      "Dostęp do e-wydania tygodnika Polityka",
+      "E-book ISBN 978-83-...",
+      "Subskrypcja cyfrowego wydania Harvard Business Review PL"
+    ],
+    "negativeExamples": [
+      "Reklama w serwisie internetowym",
+      "Audiobook (nie jest publikacją drukowaną)",
+      "Gra komputerowa do pobrania",
+      "Film na platformie VOD"
+    ],
+    "typicalSuppliers": [
+      "wydawnictwo",
+      "redakcja gazety",
+      "platforma e-bookowa",
+      "digital publisher",
+      "Agora SA",
+      "Wydawnictwo Naukowe PWN SA"
+    ],
+    "gtuCodes": null,
+    "rateVariants": null
+  },
+  {
+    "categoryId": "advertising_services_23",
+    "name": {
+      "pl": "Usługi reklamowe i marketingowe",
+      "en": "Advertising and marketing services"
+    },
+    "expectedVatRate": 23,
+    "description": {
+      "pl": "Usługi reklamowe, kampanie marketingowe, wkładki reklamowe dołączane do gazet i przesyłek, reklama w mediach cyfrowych i drukowanych. Stawka 23%, nawet jeśli nośnikiem jest gazeta lub publikacja objęta stawką 5%. Kluczowy punkt graniczny: wkładka reklamowa do gazety to usługa reklamowa (23%), nie publikacja (5%).",
+      "en": "Advertising services, marketing campaigns, advertising inserts bundled with newspapers or mailings, digital and print media advertising. Rate 23%, even when the carrier is a newspaper or publication taxed at 5%. Key borderline: an advertising insert in a newspaper is an advertising service (23%), not a publication (5%)."
+    },
+    "positiveExamples": [
+      "Kampania reklamowa Google Ads",
+      "Reklama displayowa w mediach drukowanych",
+      "Reklama w serwisie Allegro – banner",
+      "Usługa marketingu szeptanego",
+      "Produkcja materiałów reklamowych – ulotki"
+    ],
+    "negativeExamples": [
+      "Prenumerata cyfrowa Gazety Wyborczej",
+      "E-book marketingowy",
+      "Usługi PR – artykuł sponsorowany (treść redakcyjna)",
+      "Szkolenie z marketingu"
+    ],
+    "typicalSuppliers": [
+      "agencja reklamowa",
+      "agencja marketingowa",
+      "media house",
+      "advertising agency",
+      "Agencja Reklamowa Kreacja Sp. z o.o.",
+      "DOM mediowy"
+    ],
+    "gtuCodes": null,
+    "rateVariants": null
   }
 ]

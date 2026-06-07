@@ -5,4 +5,8 @@ public sealed record EvaluateInvoiceLineRequest(
     string Description,
     string SupplierName,
     string? SupplierIndustry,
-    decimal InvoiceVatRate);
+    decimal InvoiceVatRate,
+    string? GtuCode = null,
+    string? UnitOfMeasure = null,
+    bool? ReverseChargeApplied = null,
+    bool? SplitPaymentRequired = null);

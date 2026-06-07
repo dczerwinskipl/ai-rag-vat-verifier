@@ -1,22 +1,47 @@
-using System.Numerics.Tensors;
-using System.Text;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using VatVerifier.Api.Classification;
 using VatVerifier.Api.Contracts;
+using VatVerifier.Api.Embeddings;
+using VatVerifier.Api.Evaluation.Pipeline;
 
 namespace VatVerifier.Api.Evaluation;
 
-public sealed class EmbeddingVatEvaluationEngine(
-    IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator,
-    ICategoryEmbeddingStore store,
-    ICategoryClassifier classifier) : IVatEvaluationEngine
+public sealed class EmbeddingVatEvaluationEngine : IVatEvaluationEngine
 {
+    private readonly ICategoryEmbeddingStore _store;
+    private readonly IReadOnlyList<IEvaluationStep> _pipeline;
+    private readonly ILogger<EmbeddingVatEvaluationEngine> _logger;
+    private readonly double _confidenceThreshold;
+
+    public EmbeddingVatEvaluationEngine(
+        IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator,
+        ICategoryEmbeddingStore store,
+        ICategoryClassifier classifier,
+        IOptions<EvaluationOptions> options,
+        ILogger<EmbeddingVatEvaluationEngine> logger,
+        ILoggerFactory loggerFactory)
+    {
+        _store = store;
+        _logger = logger;
+        _confidenceThreshold = options.Value.ConfidenceThreshold;
+        _pipeline =
+        [
+            new StructuralCheckStep(),
+            new GtuFastPathStep(store),
+            new EmbeddingClassificationStep(embeddingGenerator, store, classifier, options,
+                loggerFactory.CreateLogger<EmbeddingClassificationStep>())
+        ];
+    }
+
     public async Task<EvaluateInvoiceLineResponse> EvaluateAsync(
         EvaluateInvoiceLineRequest request,
         CancellationToken cancellationToken)
     {
         try
         {
-            await store.ReadyAsync.WaitAsync(cancellationToken);
+            await _store.ReadyAsync.WaitAsync(cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -24,96 +49,55 @@ public sealed class EmbeddingVatEvaluationEngine(
         }
         catch (Exception ex)
         {
-            return BuildDegradedResponse(request, ex);
+            return EvaluationResponseFactory.ForDegradedState(request, ex);
         }
 
-        var queryText = BuildQueryText(request);
-        var embeddings = await embeddingGenerator.GenerateAsync([queryText], cancellationToken: cancellationToken);
-        var queryVector = embeddings[0].Vector.ToArray();
-
-        var scored = store.GetAll()
-            .Select(c => new ScoredCategory(
-                c.CategoryId,
-                c.Name,
-                (double)TensorPrimitives.CosineSimilarity<float>(queryVector, c.Vector),
-                c.ExpectedVatRate))
-            .OrderByDescending(s => s.Score)
-            .ToList();
-
-        var classification = classifier.Classify(scored, request);
-        return BuildResponse(request, classification);
-    }
-
-    private static EvaluateInvoiceLineResponse BuildResponse(EvaluateInvoiceLineRequest request, ClassificationResult classification)
-    {
-        var top = classification.TopCandidates;
-        var candidateDtos = top
-            .Select(c => new CategoryCandidateDto(c.CategoryId, c.Name, c.Score, c.ExpectedVatRate))
-            .ToList();
-
-        return classification.Status switch
+        foreach (var step in _pipeline)
         {
-            CategoryMatchStatus.Matched => BuildMatchedResponse(request, top, candidateDtos),
-            CategoryMatchStatus.Ambiguous => BuildAmbiguousResponse(request, top, candidateDtos),
-            _ => new EvaluateInvoiceLineResponse(
-                request.InvoiceLineId, EvaluationSeverity.Alert, CategoryMatchStatus.NotMatched,
-                VatValidationStatus.Unknown, request.InvoiceVatRate, [],
-                EvaluationReasonCode.CategoryNotMatched, candidateDtos, "No matching category found.")
-        };
+            var result = await step.EvaluateAsync(request, cancellationToken);
+            if (result is not null)
+            {
+                result = TryApplyRateVariantDegradation(result) ?? result;
+                LogLowConfidenceIfNeeded(result);
+                return result;
+            }
+        }
+
+        return EvaluationResponseFactory.ForDegradedState(request,
+            new InvalidOperationException("No pipeline step produced a result."));
     }
 
-    private static EvaluateInvoiceLineResponse BuildMatchedResponse(
-        EvaluateInvoiceLineRequest request,
-        IReadOnlyList<ScoredCategory> top,
-        IReadOnlyList<CategoryCandidateDto> candidateDtos)
+    private EvaluateInvoiceLineResponse? TryApplyRateVariantDegradation(EvaluateInvoiceLineResponse response)
     {
-        var expectedRate = top[0].ExpectedVatRate;
-        if (request.InvoiceVatRate == expectedRate)
-            return new EvaluateInvoiceLineResponse(
-                request.InvoiceLineId, EvaluationSeverity.Ok, CategoryMatchStatus.Matched,
-                VatValidationStatus.Match, request.InvoiceVatRate, [expectedRate],
-                EvaluationReasonCode.VatMatched, candidateDtos,
-                $"VAT rate {request.InvoiceVatRate}% matches the expected rate for this category.");
+        if (response.CategoryMatchStatus != CategoryMatchStatus.Matched) return null;
 
-        return new EvaluateInvoiceLineResponse(
-            request.InvoiceLineId, EvaluationSeverity.Critical, CategoryMatchStatus.Matched,
-            VatValidationStatus.Mismatch, request.InvoiceVatRate, [expectedRate],
-            EvaluationReasonCode.VatMismatch, candidateDtos,
-            $"VAT mismatch: invoice has {request.InvoiceVatRate}%, expected {expectedRate}%.");
+        var topCategoryId = response.CategoryCandidates.FirstOrDefault()?.CategoryId;
+        if (topCategoryId is null) return null;
+
+        var stored = _store.FindByCategoryId(topCategoryId);
+        if (stored?.RateVariantRates is not { Count: > 0 } variantRates) return null;
+
+        return EvaluationResponseFactory.ForRateVariantDegradation(response, variantRates);
     }
 
-    private static EvaluateInvoiceLineResponse BuildAmbiguousResponse(
-        EvaluateInvoiceLineRequest request,
-        IReadOnlyList<ScoredCategory> top,
-        IReadOnlyList<CategoryCandidateDto> candidateDtos)
+    private void LogLowConfidenceIfNeeded(EvaluateInvoiceLineResponse response)
     {
-        var distinctRates = top.Select(c => c.ExpectedVatRate).Distinct().ToList();
+        if (!response.CategoryCandidates.Any()) return;
 
-        if (distinctRates.Count == 1 && request.InvoiceVatRate == distinctRates[0])
-            return new EvaluateInvoiceLineResponse(
-                request.InvoiceLineId, EvaluationSeverity.Warning, CategoryMatchStatus.Ambiguous,
-                VatValidationStatus.Match, request.InvoiceVatRate, distinctRates,
-                EvaluationReasonCode.CategoryAmbiguousButVatConsistent, candidateDtos,
-                "Category is ambiguous but all candidates agree on the VAT rate.");
+        var topScore = response.CategoryCandidates.Max(c => c.Score);
 
-        return new EvaluateInvoiceLineResponse(
-            request.InvoiceLineId, EvaluationSeverity.Alert, CategoryMatchStatus.Ambiguous,
-            VatValidationStatus.Unknown, request.InvoiceVatRate, distinctRates,
-            EvaluationReasonCode.CategoryAmbiguousWithDifferentVatRates, candidateDtos,
-            "Category is ambiguous with candidates having different VAT rates.");
-    }
+        // Score of exactly 1.0 is a GTU exact-match — deterministic, not a confidence concern
+        if (topScore >= 1.0) return;
 
-    private static EvaluateInvoiceLineResponse BuildDegradedResponse(EvaluateInvoiceLineRequest request, Exception ex) =>
-        new(request.InvoiceLineId, EvaluationSeverity.Alert, CategoryMatchStatus.NotMatched,
-            VatValidationStatus.Unknown, request.InvoiceVatRate, [],
-            EvaluationReasonCode.InsufficientData, [],
-            $"Evaluation engine not ready: {ex.Message}");
+        if (response.CategoryMatchStatus != CategoryMatchStatus.Ambiguous
+            && topScore >= _confidenceThreshold) return;
 
-    private static string BuildQueryText(EvaluateInvoiceLineRequest r)
-    {
-        var sb = new StringBuilder($"{r.Description} | {r.SupplierName}");
-        if (!string.IsNullOrWhiteSpace(r.SupplierIndustry))
-            sb.Append($" | {r.SupplierIndustry}");
-        return sb.ToString();
+        _logger.LogInformation(
+            "Low confidence evaluation: invoiceLineId={InvoiceLineId} score={Score:F4} categoryMatchStatus={CategoryMatchStatus} severity={Severity} reasonCode={ReasonCode}",
+            response.InvoiceLineId,
+            topScore,
+            response.CategoryMatchStatus,
+            response.Severity,
+            response.ReasonCode);
     }
 }

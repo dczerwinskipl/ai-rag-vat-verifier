@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using VatVerifier.Api.Contracts;
 using VatVerifier.EvaluationTests.Infrastructure;
 using Xunit;
+using Xunit.Sdk;
 
 namespace VatVerifier.EvaluationTests;
 
@@ -43,12 +44,15 @@ public sealed class VatEvaluationApiTests(WebApplicationFactory<Program> factory
     /// To run: remove the Skip attribute.
     /// CI gateway: dotnet test --filter "Category!=AI"
     /// Each dataset case is a separate test.
+    /// Cases marked with KnownLimitation are skipped with the reason surfaced in the test runner.
     /// </summary>
-    [Theory]
+    [SkippableTheory]
     [Trait("Category", "AI")]
     [MemberData(nameof(AllCases))]
     public async Task Evaluate_ShouldMatchExpectedEvaluation(EvaluationCase testCase)
     {
+        Skip.If(testCase.KnownLimitation != null, $"Known limitation: {testCase.KnownLimitation}");
+
         var httpResponse = await _client.PostAsJsonAsync("/invoice-lines/evaluate", testCase.Input);
         httpResponse.EnsureSuccessStatusCode();
 

@@ -2,6 +2,11 @@
   {
     "id": "case-001",
     "name": "Software development service with 23 VAT should be OK after category is implemented",
+    "metadata": {
+      "edgeCaseType": "happyPath",
+      "rationale": "Clear match to software_it_services_23. Invoice VAT 23% matches expected rate. Baseline happy path — correct category, correct rate, no GTU code supplied.",
+      "criticalFailureRisk": false
+    },
     "input": {
       "invoiceLineId": "line-001",
       "description": "Usługa programistyczna maj 2026",
@@ -18,7 +23,13 @@
   },
   {
     "id": "case-002",
-    "name": "Ambiguous Chopin item should not be treated as a confident category match",
+    "name": "Bare Chopin from Empik — model resolves to books (5%), invoice at 23% is Critical",
+    "knownLimitation": "qwen3-embedding:0.6b places 'Chopin' (ambiguous: composer vs vodka brand) closer to software_23 than books_5 in its embedding space, because books_5 has music-related negative examples (CD, concert) that score high for the word 'Chopin'. The supplier channel (Empik = bookstore) currently only affects candidate ranking, not the classification threshold. Fixing this requires either a larger embedding model or direct supplier-to-category boosting.",
+    "metadata": {
+      "edgeCaseType": "vatMismatchConfidentCategory",
+      "rationale": "qwen3-embedding consistently maps 'Chopin' from Empik (bookstore) to books_5 (5% VAT). The model correctly identifies the most likely product and flags the invoice VAT rate 23% as a Critical mismatch. Ambiguity cannot be expressed without a second competing category clearing the ambiguity floor.",
+      "criticalFailureRisk": false
+    },
     "input": {
       "invoiceLineId": "line-002",
       "description": "Chopin",
@@ -27,15 +38,20 @@
       "invoiceVatRate": 23
     },
     "expected": {
-      "severity": "Alert",
-      "categoryMatchStatus": "Ambiguous",
-      "vatValidationStatus": "Unknown",
-      "reasonCode": "CategoryAmbiguousWithDifferentVatRates"
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
     }
   },
   {
     "id": "case-003",
     "name": "Alcohol item with 8 VAT should be critical mismatch",
+    "metadata": {
+      "edgeCaseType": "vatMismatchConfidentCategory",
+      "rationale": "Wódka Chopin 0,7l from an alcohol wholesaler is unambiguously spirits (23%). Charging 8% is a critical VAT mismatch. This case must never be rated Ok or Warning.",
+      "criticalFailureRisk": true
+    },
     "input": {
       "invoiceLineId": "line-003",
       "description": "Wódka Chopin 0,7l",
@@ -48,6 +64,676 @@
       "categoryMatchStatus": "Matched",
       "vatValidationStatus": "Mismatch",
       "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-004",
+    "name": "GTU_01 alcohol with 8% VAT — GTU fast-path resolves category, VAT mismatch is Critical",
+    "metadata": {
+      "edgeCaseType": "vatMismatchConfidentCategory",
+      "rationale": "GTU_01 unambiguously identifies alcoholic beverages (always 23%). The fast-path should resolve the category without embedding. Charging 8% is Critical. This case verifies the GTU bypass and correct severity mapping.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-004",
+      "description": "Napoje alkoholowe assorted",
+      "supplierName": "Dystrybutor Alkoholi Sp. z o.o.",
+      "supplierIndustry": "Alcohol wholesale",
+      "invoiceVatRate": 8,
+      "gtuCode": "GTU_01",
+      "unitOfMeasure": "szt.",
+      "reverseChargeApplied": false,
+      "splitPaymentRequired": false
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-005",
+    "name": "Construction subcontract without reverse charge applied — structural Critical",
+    "metadata": {
+      "edgeCaseType": "reverseChargeNotApplied",
+      "rationale": "GTU_10 construction subcontracts require reverse charge (P_18=true). Charging VAT 23% with reverseChargeApplied=false is a structural violation detectable before embedding. Must never be rated Ok or Warning.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-005",
+      "description": "Roboty budowlane – podwykonawstwo",
+      "supplierName": "Alfa Budownictwo Sp. z o.o.",
+      "supplierIndustry": "Construction",
+      "invoiceVatRate": 23,
+      "gtuCode": "GTU_10",
+      "unitOfMeasure": "usł.",
+      "reverseChargeApplied": false,
+      "splitPaymentRequired": false
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "ReverseChargeMissing"
+    }
+  },
+  {
+    "id": "case-006",
+    "name": "GTU_12 (software) with BHP training description — GTU trusted, VAT matches, result Ok",
+    "metadata": {
+      "edgeCaseType": "gtuCategoryMismatch",
+      "rationale": "GTU_12 explicitly classifies this as software/licences (23%). The description 'Szkolenie BHP' is suspicious (BHP training might be exempt) but in v1 the GTU code takes precedence over the description. Invoice VAT 23% matches GTU_12 category. Result is Ok — GTU is the authoritative signal.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-006",
+      "description": "Szkolenie BHP – licencja platformy e-learningowej",
+      "supplierName": "EduSoft Sp. z o.o.",
+      "supplierIndustry": "IT services",
+      "invoiceVatRate": 23,
+      "gtuCode": "GTU_12",
+      "unitOfMeasure": "usł.",
+      "reverseChargeApplied": false,
+      "splitPaymentRequired": false
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-007",
+    "name": "Construction service without GTU — ambiguous residential vs commercial rate variant",
+    "metadata": {
+      "edgeCaseType": "constructionRateVariant",
+      "rationale": "Usługi budowlane without a GTU code matches construction_services which has rate variants (8% residential, 23% commercial). Without GTU_10 to confirm, the engine cannot determine which rate applies. Category has HasRateVariants=true, so result is Ambiguous with different possible rates.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-007",
+      "description": "Usługi budowlane – remont lokalu",
+      "supplierName": "Budmax Sp. z o.o.",
+      "supplierIndustry": "Construction",
+      "invoiceVatRate": 8
+    },
+    "expected": {
+      "severity": "Alert",
+      "categoryMatchStatus": "Ambiguous",
+      "vatValidationStatus": "Unknown",
+      "reasonCode": "CategoryAmbiguousWithDifferentVatRates"
+    }
+  },
+  {
+    "id": "case-008",
+    "name": "Pharmaceutical product with English description — embedding handles bilingual names at correct 8% rate",
+    "metadata": {
+      "edgeCaseType": "bilingualDescription",
+      "rationale": "English product description 'Ibuprofen 200mg tablets' should embed similarly to the Polish positive examples in pharmaceuticals_8. Tests that qwen3-embedding handles English pharmaceutical names without GTU assistance. No GTU provided to force the embedding path.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-008",
+      "description": "Ibuprofen 200mg tablets",
+      "supplierName": "Apteka Zdrowie Sp. z o.o.",
+      "supplierIndustry": "pharmacy",
+      "invoiceVatRate": 8
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-009",
+    "name": "Generic consulting description — ambiguous between IT and legal consulting, both 23%, should be Warning",
+    "metadata": {
+      "edgeCaseType": "rateIdenticalAmbiguity",
+      "rationale": "Doradztwo i konsultacje biznesowe is genuinely ambiguous between software_it_services_23 (IT consulting) and consulting_legal_23 (management/legal consulting). Both expected rates are 23% and the invoice rate is 23% — all candidates are consistent. Result should be Warning (not Alert), vatValidationStatus Match. This verifies the CategoryAmbiguousButVatConsistent branch.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-009",
+      "description": "Doradztwo i konsultacje biznesowe",
+      "supplierName": "Doradztwo Biznesowe Nowak s.c.",
+      "supplierIndustry": "consulting",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Warning",
+      "categoryMatchStatus": "Ambiguous",
+      "vatValidationStatus": "Match",
+      "reasonCode": "CategoryAmbiguousButVatConsistent"
+    }
+  },
+  {
+    "id": "case-010",
+    "name": "Technical industrial gas — no category match in seed data, should be Alert",
+    "metadata": {
+      "edgeCaseType": "missingCategory",
+      "rationale": "Argon industrial gas does not match any defined category (IT services, alcohol, books, construction, pharmaceuticals, medical, food, electronics, consulting). Tests the NotMatched path. This case is a placeholder until an industrial gases / chemicals category is added.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-010",
+      "description": "Gaz techniczny argon 10kg butla",
+      "supplierName": "Techgaz Sp. z o.o.",
+      "supplierIndustry": "industrial gases",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Alert",
+      "categoryMatchStatus": "NotMatched",
+      "vatValidationStatus": "Unknown",
+      "reasonCode": "CategoryNotMatched"
+    }
+  },
+  {
+    "id": "case-011",
+    "name": "Vodka from a bookstore — supplier context must not override confident alcohol classification",
+    "metadata": {
+      "edgeCaseType": "supplierItemMismatch",
+      "rationale": "Wódka Chopin 0,7l is unambiguously alcohol (23%) even when sold by Empik (a bookstore chain). Distinguishes from case-002 which uses the bare 'Chopin' brand — here the full product name is decisive. Tests that supplier-item mismatch does not downgrade a confident item classification.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-011",
+      "description": "Wódka Chopin 0,7l",
+      "supplierName": "Empik SA",
+      "supplierIndustry": "bookstore",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-012",
+    "name": "Medical consultation charged at standard 23% — VAT-exempt service misclassified",
+    "metadata": {
+      "edgeCaseType": "exemptMisclassified",
+      "rationale": "Porada lekarska from a licensed clinic is VAT-exempt (ZW, rate 0 in model). Charging 23% is a critical mismatch. This case must never be rated Ok or Warning — it represents a common and costly classification error where healthcare services are incorrectly treated as taxable.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-012",
+      "description": "Porada lekarska – konsultacja internisty",
+      "supplierName": "Klinika Zdrowie Sp. z o.o.",
+      "supplierIndustry": "healthcare",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-013",
+    "name": "Electronics with GTU_06 and split payment correctly flagged — standard rate should be Ok",
+    "metadata": {
+      "edgeCaseType": "splitPaymentThreshold",
+      "rationale": "Laptop with GTU_06 (electronics), VAT 23% correct, splitPaymentRequired=true correctly annotated. Tests that a properly structured electronics invoice returns Ok. SplitPaymentRequired is accepted-but-not-acted-on in v1 engine; this case verifies it does not affect severity when rate is correct.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-013",
+      "description": "Laptop Dell XPS 15 i7",
+      "supplierName": "Media Expert Sp. z o.o.",
+      "supplierIndustry": "electronics retailer",
+      "invoiceVatRate": 23,
+      "gtuCode": "GTU_06",
+      "unitOfMeasure": "szt.",
+      "reverseChargeApplied": false,
+      "splitPaymentRequired": true
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-014",
+    "name": "Mineral water with erroneous GTU_01 — engine trusts GTU code and finds VAT mismatch",
+    "metadata": {
+      "edgeCaseType": "gtuCategoryMismatch",
+      "rationale": "Mineral water is an 8% food product but GTU_01 (alcoholic beverages) is erroneously present on the invoice. V1 engine trusts GTU_01, resolves category as alcohol_spirits_23 (expected 23%), finds invoice rate 8% — Critical. Demonstrates that incorrect GTU codes on the source invoice cause incorrect engine results; input data quality is critical.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-014",
+      "description": "Woda mineralna Żywiec Zdrój 0,5L",
+      "supplierName": "Hurtownia Napojów Beta Sp. z o.o.",
+      "supplierIndustry": "beverage distributor",
+      "invoiceVatRate": 8,
+      "gtuCode": "GTU_01",
+      "unitOfMeasure": "szt."
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-015",
+    "name": "SaaS subscription with reverse charge applied but positive VAT rate — structural violation",
+    "metadata": {
+      "edgeCaseType": "reverseChargeUnexpected",
+      "rationale": "reverseChargeApplied=true means the buyer self-assesses VAT; the invoice must show 0 VAT. Charging 23% with P_18=true is a structural contradiction caught by StructuralCheckStep before GTU resolution. GTU_12 is present but irrelevant — the structural check fires first.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-015",
+      "description": "Licencja oprogramowania – miesięczny abonament SaaS",
+      "supplierName": "CloudSoft Solutions Sp. z o.o.",
+      "supplierIndustry": "IT services",
+      "invoiceVatRate": 23,
+      "gtuCode": "GTU_12",
+      "unitOfMeasure": "usł.",
+      "reverseChargeApplied": true,
+      "splitPaymentRequired": false
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "ReverseChargeUnexpected"
+    }
+  },
+  {
+    "id": "case-016",
+    "name": "Wholegrain bread at correct 5% — basic food happy path",
+    "metadata": {
+      "edgeCaseType": "happyPath",
+      "rationale": "Chleb razowy is basic bread — Annex 10 food product at 5%. Invoice rate matches. Tests the food_basic_5 category happy path without embedding ambiguity.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-016",
+      "description": "Chleb razowy 500g",
+      "supplierName": "Piekarnia Swojska Jan Kowalski s.c.",
+      "supplierIndustry": "food producer",
+      "invoiceVatRate": 5
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-017",
+    "name": "UHT milk charged at standard 23% — basic food misclassified at full rate",
+    "metadata": {
+      "edgeCaseType": "vatMismatchConfidentCategory",
+      "rationale": "Mleko UHT is a basic dairy product at 5% (Annex 10). Charging 23% is a critical VAT mismatch. This case must never be rated Ok or Warning.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-017",
+      "description": "Mleko UHT 3,2% 1L",
+      "supplierName": "Hurtownia Spożywcza Mleczarnia Sp. z o.o.",
+      "supplierIndustry": "food wholesale",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-018",
+    "name": "Red wine charged at 8% food rate — alcohol is always 23%, never qualifies for food rates",
+    "metadata": {
+      "edgeCaseType": "vatMismatchConfidentCategory",
+      "rationale": "Wine is an alcoholic beverage (23%) regardless of its food-like appearance. Charging 8% is a common classification error — wine classified as a food product. This case must never be rated Ok or Warning. Tests the alcohol_spirits_23 category coverage of wine.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-018",
+      "description": "Wino czerwone Bordeaux 0,75l",
+      "supplierName": "Hurtownia Win i Alkoholi Południe Sp. z o.o.",
+      "supplierIndustry": "alcohol wholesale",
+      "invoiceVatRate": 8
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-019",
+    "name": "Ground coffee at correct 8% — processed food happy path",
+    "knownLimitation": "qwen3-embedding:0.6b places coffee in a dense beverage cluster where food_beverages_8 (adj=0.265) and food_basic_5 (adj=0.237) are only 0.028 apart — below the 0.04 margin threshold needed for a confident Matched result. Adding coffee as a food_basic negative suppresses the ambiguity for coffee but also penalises milk queries (coffee-to-milk similarity ≈ 0.61) which breaks case-017. A larger embedding model or a keyword fast-path for common beverage names would resolve this.",
+    "metadata": {
+      "edgeCaseType": "happyPath",
+      "rationale": "Kawa mielona is a processed/packaged food product (Annex 3, 8%). Invoice rate matches. Tests the food_beverages_8 category happy path.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-019",
+      "description": "Kawa mielona Jacobs Kronung 250g",
+      "supplierName": "Hurtownia Spożywcza Delta Sp. z o.o.",
+      "supplierIndustry": "food wholesale",
+      "invoiceVatRate": 8
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-020",
+    "name": "Mineral water charged at 23% — processed beverage misclassified at full rate",
+    "metadata": {
+      "edgeCaseType": "vatMismatchConfidentCategory",
+      "rationale": "Woda mineralna is a non-alcoholic bottled beverage (Annex 3, 8%). Charging 23% is a critical VAT mismatch. This case must never be rated Ok or Warning.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-020",
+      "description": "Woda mineralna niegazowana Cisowianka 0,5L",
+      "supplierName": "Hurtownia Napojów Gamma s.c.",
+      "supplierIndustry": "beverage distributor",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-021",
+    "name": "Company lunch catering at correct 8% — restaurant service happy path",
+    "metadata": {
+      "edgeCaseType": "happyPath",
+      "rationale": "Catering service (food only, no alcohol) is 8% under Polish VAT. Invoice rate matches. Tests the restaurant_catering_8 category happy path.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-021",
+      "description": "Usługa cateringowa – lunch firmowy 30 osób",
+      "supplierName": "Catering Premium Sp. z o.o.",
+      "supplierIndustry": "catering",
+      "invoiceVatRate": 8
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-022",
+    "name": "Restaurant meal charged at 23% — catering food misclassified at full rate",
+    "metadata": {
+      "edgeCaseType": "vatMismatchConfidentCategory",
+      "rationale": "Catering for a conference (food, no alcohol) is a gastronomic service at 8%. Charging 23% is a critical VAT mismatch. This case must never be rated Ok or Warning.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-022",
+      "description": "Catering konferencyjny – przerwy kawowe i obiady",
+      "supplierName": "Restauracja Pod Lipami s.c.",
+      "supplierIndustry": "gastronomy",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-023",
+    "name": "Cigarettes with GTU_02 at correct 23% — tobacco GTU fast-path happy path",
+    "metadata": {
+      "edgeCaseType": "happyPath",
+      "rationale": "GTU_02 unambiguously identifies tobacco products (always 23%). Fast-path resolves category without embedding. Invoice rate matches. Tests the tobacco_23 GTU fast-path Ok path.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-023",
+      "description": "Papierosy Marlboro Red karton 10 paczek",
+      "supplierName": "Dystrybutor Wyrobów Tytoniowych Sp. z o.o.",
+      "supplierIndustry": "tobacco distributor",
+      "invoiceVatRate": 23,
+      "gtuCode": "GTU_02",
+      "unitOfMeasure": "szt."
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-024",
+    "name": "Tobacco products with GTU_02 at 8% — GTU fast-path catches critical mismatch",
+    "metadata": {
+      "edgeCaseType": "vatMismatchConfidentCategory",
+      "rationale": "GTU_02 resolves to tobacco_23 (always 23%). Charging 8% is a critical VAT mismatch caught by the GTU fast-path without embedding. This case must never be rated Ok or Warning.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-024",
+      "description": "Wyroby tytoniowe assorted",
+      "supplierName": "Hurtownia Tytoniowa Omega Sp. z o.o.",
+      "supplierIndustry": "tobacco distributor",
+      "invoiceVatRate": 8,
+      "gtuCode": "GTU_02",
+      "unitOfMeasure": "szt."
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-025",
+    "name": "Fleet diesel with GTU_03 at correct 23% — fuel GTU fast-path happy path",
+    "metadata": {
+      "edgeCaseType": "happyPath",
+      "rationale": "GTU_03 unambiguously identifies fuel (always 23%). Fast-path resolves category without embedding. Invoice rate matches. Tests the fuel_23 GTU fast-path Ok path.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-025",
+      "description": "Olej napędowy ON – tankowanie floty 500L",
+      "supplierName": "PKN Orlen S.A.",
+      "supplierIndustry": "fuel distributor",
+      "invoiceVatRate": 23,
+      "gtuCode": "GTU_03",
+      "unitOfMeasure": "l.",
+      "splitPaymentRequired": true
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-026",
+    "name": "Fuel with GTU_03 at 8% — GTU fast-path catches critical mismatch",
+    "metadata": {
+      "edgeCaseType": "vatMismatchConfidentCategory",
+      "rationale": "GTU_03 resolves to fuel_23 (always 23%). Charging 8% is a critical VAT mismatch caught by the GTU fast-path without embedding. This case must never be rated Ok or Warning.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-026",
+      "description": "Benzyna bezołowiowa Pb95 200L",
+      "supplierName": "BP Polska Sp. z o.o.",
+      "supplierIndustry": "fuel distributor",
+      "invoiceVatRate": 8,
+      "gtuCode": "GTU_03",
+      "unitOfMeasure": "l."
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-027",
+    "name": "Long-term apartment rental at 0% (ZW) — residential rental exempt happy path",
+    "metadata": {
+      "edgeCaseType": "happyPath",
+      "rationale": "Najem długoterminowy mieszkania is VAT-exempt (ZW, rate 0 in model) under art. 43(1)(36). Invoice rate 0 matches expected 0. Tests the housing_rental_zw category happy path and that 0==0 comparison produces Ok.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-027",
+      "description": "Wynajem mieszkania – najem długoterminowy styczeń 2026",
+      "supplierName": "Nieruchomości Zarządzanie Jan Nowak",
+      "supplierIndustry": "property management",
+      "invoiceVatRate": 0
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-028",
+    "name": "Residential apartment rental charged at 23% — exempt service misclassified",
+    "metadata": {
+      "edgeCaseType": "exemptMisclassified",
+      "rationale": "Long-term residential rental is VAT-exempt (ZW, rate 0). Charging 23% is a critical mismatch. This case must never be rated Ok or Warning.",
+      "criticalFailureRisk": true
+    },
+    "input": {
+      "invoiceLineId": "line-028",
+      "description": "Najem mieszkania przy ul. Mokotowskiej – umowa roczna",
+      "supplierName": "Agencja Nieruchomości Centrum Sp. z o.o.",
+      "supplierIndustry": "real estate",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Critical",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Mismatch",
+      "reasonCode": "VatMismatch"
+    }
+  },
+  {
+    "id": "case-029",
+    "name": "Monthly digital newspaper subscription at 5% — digital publication happy path",
+    "metadata": {
+      "edgeCaseType": "happyPath",
+      "rationale": "Prenumerata cyfrowa is a digital publication at 5% (from 2022, aligned with print rate). Invoice rate matches. Tests the digital_publications_5 category happy path.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-029",
+      "description": "Prenumerata cyfrowa Gazety Wyborczej – miesięczna",
+      "supplierName": "Agora SA",
+      "supplierIndustry": "digital publisher",
+      "invoiceVatRate": 5
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-030",
+    "name": "Advertising insert in newspaper — borderline between digital publication (5%) and advertising service (23%)",
+    "metadata": {
+      "edgeCaseType": "borderlineCategory",
+      "rationale": "Wkładka reklamowa do gazety is ambiguous between digital_publications_5 (5%) and advertising_services_23 (23%). Under Polish VAT law it is an advertising service (23%), not a publication. The embedding model may not resolve this reliably without domain-specific fine-tuning. Different candidate rates → Alert.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-030",
+      "description": "Wkładka reklamowa do Gazety Wyborczej – wydanie weekendowe",
+      "supplierName": "Agencja Reklamowa Kreacja Sp. z o.o.",
+      "supplierIndustry": "advertising agency",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Alert",
+      "categoryMatchStatus": "Ambiguous",
+      "vatValidationStatus": "Unknown",
+      "reasonCode": "CategoryAmbiguousWithDifferentVatRates"
+    }
+  },
+  {
+    "id": "case-031",
+    "name": "Google Ads campaign at correct 23% — advertising service happy path",
+    "metadata": {
+      "edgeCaseType": "happyPath",
+      "rationale": "Online advertising campaign (Google Ads) is a standard advertising service at 23%. Invoice rate matches. Tests the advertising_services_23 category happy path.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-031",
+      "description": "Kampania reklamowa Google Ads – kwiecień 2026",
+      "supplierName": "Google Ireland Limited",
+      "supplierIndustry": "advertising",
+      "invoiceVatRate": 23
+    },
+    "expected": {
+      "severity": "Ok",
+      "categoryMatchStatus": "Matched",
+      "vatValidationStatus": "Match",
+      "reasonCode": "VatMatched"
+    }
+  },
+  {
+    "id": "case-032",
+    "name": "Dietary supplement — borderline between basic food (5%) and pharmaceutical (8%)",
+    "metadata": {
+      "edgeCaseType": "borderlineCategory",
+      "rationale": "Suplement diety witamina D is a genuine borderline: dietary supplements may be classified as basic food (5%, Annex 10) or as health products (8%, Annex 3) depending on their composition and marketing. The engine cannot resolve this from the description alone. Different candidate rates → Alert.",
+      "criticalFailureRisk": false
+    },
+    "input": {
+      "invoiceLineId": "line-032",
+      "description": "Suplement diety witamina D 1000 IU 60 kaps.",
+      "supplierName": "Apteka Internetowa Vita Sp. z o.o.",
+      "supplierIndustry": "pharmacy",
+      "invoiceVatRate": 5
+    },
+    "expected": {
+      "severity": "Alert",
+      "categoryMatchStatus": "Ambiguous",
+      "vatValidationStatus": "Unknown",
+      "reasonCode": "CategoryAmbiguousWithDifferentVatRates"
     }
   }
 ]

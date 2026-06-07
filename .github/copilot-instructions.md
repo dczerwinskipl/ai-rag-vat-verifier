@@ -49,5 +49,6 @@ Use the following prompt files for structured tasks:
 | `/rag-implementer` | Execute an implementation plan step by step |
 | `/rag-reviewer` | Review a completed implementation against its spec |
 | `/rag-test-data-writer` | Generate Polish VAT invoice test data |
+| `/rag-eval-tuner` | Diagnose failing evaluation cases and tune classifier parameters and category descriptions |
 
 Attach `CLAUDE.md` and relevant `instructions/` files for full workflow context.

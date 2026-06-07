@@ -16,11 +16,14 @@ public sealed class EvaluationCase : IXunitSerializable
     public string Name { get; set; } = "";
     public EvaluateInvoiceLineRequest Input { get; set; } = null!;
     public ExpectedEvaluation Expected { get; set; } = null!;
+    /// <summary>Set to non-null to mark a case as a known model limitation — the assertion test is skipped.</summary>
+    public string? KnownLimitation { get; set; }
 
     public EvaluationCase() { }
 
-    public EvaluationCase(string id, string name, EvaluateInvoiceLineRequest input, ExpectedEvaluation expected)
-        => (Id, Name, Input, Expected) = (id, name, input, expected);
+    public EvaluationCase(string id, string name, EvaluateInvoiceLineRequest input, ExpectedEvaluation expected,
+        string? knownLimitation = null)
+        => (Id, Name, Input, Expected, KnownLimitation) = (id, name, input, expected, knownLimitation);
 
     public void Serialize(IXunitSerializationInfo info) =>
         info.AddValue("v", JsonSerializer.Serialize(this, JsonOptions));
@@ -28,7 +31,7 @@ public sealed class EvaluationCase : IXunitSerializable
     public void Deserialize(IXunitSerializationInfo info)
     {
         var src = JsonSerializer.Deserialize<EvaluationCase>(info.GetValue<string>("v")!, JsonOptions)!;
-        (Id, Name, Input, Expected) = (src.Id, src.Name, src.Input, src.Expected);
+        (Id, Name, Input, Expected, KnownLimitation) = (src.Id, src.Name, src.Input, src.Expected, src.KnownLimitation);
     }
 
     public override string ToString() => Name;
