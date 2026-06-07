@@ -13,8 +13,12 @@ public sealed class CosineSimilarityClassifier(
 
     public ClassificationResult Classify(IReadOnlyList<ScoredCategory> rankedCandidates, EvaluateInvoiceLineRequest request)
     {
-        // Take the fused top-N, then re-sort by adjScore so threshold/margin comparisons
-        // are consistent regardless of how the supplier channel may have reordered the list.
+        // wRRF acts as a candidate gate: it selects which top-N categories are worth evaluating
+        // by combining description and supplier channel ranks. Once the gate is applied, the
+        // final classification decision is driven by adjScore (positive centroid minus negative
+        // penalty) — not by wRRF rank — because adjScore directly encodes category confidence.
+        // Re-sorting here ensures threshold and margin comparisons are against the discriminative
+        // score rather than the fusion rank.
         var top = rankedCandidates
             .Take(_options.MaxCandidates)
             .OrderByDescending(c => c.Score)

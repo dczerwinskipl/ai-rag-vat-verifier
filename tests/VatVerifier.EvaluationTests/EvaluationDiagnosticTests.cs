@@ -16,8 +16,11 @@ namespace VatVerifier.EvaluationTests;
 /// <summary>
 /// Runs all evaluation cases and writes a detailed diagnostic report showing per-category
 /// embedding scores, classification decisions, and pass/fail status.
+/// Requires Ollama with qwen3-embedding:0.6b.
 /// Run with: dotnet test --filter "Category=Diagnostic"
+/// Excluded from CI by the Category=AI trait.
 /// </summary>
+[Trait("Category", "AI")]
 [Trait("Category", "Diagnostic")]
 public sealed class EvaluationDiagnosticTests : IAsyncDisposable
 {

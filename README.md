@@ -134,9 +134,9 @@ The critical test case that must never produce a false low-severity result: an i
 
 ```json
 "Evaluation": {
-  "StrongCandidateThreshold": 0.45,
-  "AmbiguousCandidateThreshold": 0.38,
-  "CandidateMarginThreshold": 0.09,
+  "StrongCandidateThreshold": 0.21,
+  "AmbiguousCandidateThreshold": 0.20,
+  "CandidateMarginThreshold": 0.04,
   "MaxCandidates": 5,
   "ConfidenceThreshold": 0.75,
   "NegativePenaltyWeight": 0.30,
@@ -157,7 +157,7 @@ The critical test case that must never produce a false low-severity result: an i
 | :-- | :------ |
 | `StrongCandidateThreshold` | Minimum adjusted cosine score for a single confident match |
 | `AmbiguousCandidateThreshold` | Minimum score for a candidate to enter the ambiguous set |
-| `CandidateMarginThreshold` | Maximum gap between the top two candidates before triggering ambiguity |
+| `CandidateMarginThreshold` | Minimum margin between the top two candidates required to confirm a confident `Matched` result |
 | `ConfidenceThreshold` | Score below which a match is logged as low-confidence |
 | `NegativePenaltyWeight` (α) | How much the negative-centroid similarity subtracts from the positive score |
 | `DescriptionChannelWeight` | wRRF weight for the description channel (0–1, must sum to 1 with supplier weight) |
