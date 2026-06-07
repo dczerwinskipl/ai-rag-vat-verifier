@@ -34,7 +34,7 @@ jobs:
               echo "  Types: feat | fix | chore | docs | refactor | test | ci | build | revert"
               failed=1
             fi
-          done < <(git log "origin/main..HEAD" --pretty=format:"%s")
+          done < <(git log "origin/main..HEAD" --no-merges --pretty=format:"%s")
           exit $failed
 
   build-and-test:
