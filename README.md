@@ -130,14 +130,19 @@ The critical test case that must never produce a false low-severity result: an i
 
 ## Configuration
 
-`appsettings.json` exposes evaluation thresholds and AI provider settings:
+`appsettings.json` exposes evaluation thresholds, scoring weights, and AI provider settings:
 
 ```json
 "Evaluation": {
-  "StrongCandidateThreshold": 0.85,
-  "AmbiguousCandidateThreshold": 0.75,
-  "CandidateMarginThreshold": 0.10,
-  "MaxCandidates": 5
+  "StrongCandidateThreshold": 0.45,
+  "AmbiguousCandidateThreshold": 0.38,
+  "CandidateMarginThreshold": 0.09,
+  "MaxCandidates": 5,
+  "ConfidenceThreshold": 0.75,
+  "NegativePenaltyWeight": 0.30,
+  "DescriptionChannelWeight": 0.70,
+  "SupplierChannelWeight": 0.30,
+  "RrfK": 60
 },
 "Ai": {
   "Provider": "Ollama",
@@ -147,6 +152,17 @@ The critical test case that must never produce a false low-severity result: an i
   }
 }
 ```
+
+| Key | Purpose |
+| :-- | :------ |
+| `StrongCandidateThreshold` | Minimum adjusted cosine score for a single confident match |
+| `AmbiguousCandidateThreshold` | Minimum score for a candidate to enter the ambiguous set |
+| `CandidateMarginThreshold` | Maximum gap between the top two candidates before triggering ambiguity |
+| `ConfidenceThreshold` | Score below which a match is logged as low-confidence |
+| `NegativePenaltyWeight` (α) | How much the negative-centroid similarity subtracts from the positive score |
+| `DescriptionChannelWeight` | wRRF weight for the description channel (0–1, must sum to 1 with supplier weight) |
+| `SupplierChannelWeight` | wRRF weight for the supplier channel |
+| `RrfK` | Reciprocal Rank Fusion smoothing constant (higher → less aggressive rank influence) |
 
 ## Swapping AI providers
 
@@ -158,14 +174,19 @@ Provider registration lives only in `Program.cs`. Switching from Ollama to OpenA
 ```
 src/
   VatVerifier.Api/
-    Program.cs                        # DI, route mapping
+    Program.cs                        # DI wiring, route mapping, endpoint
+    AssemblyAttributes.cs             # InternalsVisibleTo for test project
+    Classification/                   # ICategoryClassifier, CosineSimilarityClassifier
     Contracts/                        # Request / response records, enums
-    Evaluation/                       # IVatEvaluationEngine + stub implementation
-    Ai/                               # AiOptions, embedding wiring notes
+    Data/                             # CategorySeedEntry, vat-categories.seed.json
+    Embeddings/                       # ICategoryEmbeddingStore, InMemoryCategoryEmbeddingStore
+    Evaluation/                       # IVatEvaluationEngine, EmbeddingVatEvaluationEngine, EvaluationOptions
+      Pipeline/                       # IEvaluationStep + step implementations (GTU fast path, structural check, embedding classification)
+    Startup/                          # CategoryEmbeddingWarmupService (hosted service, loads embeddings at startup)
 tests/
   VatVerifier.EvaluationTests/
     Datasets/
-      vat-categories.seed.json        # Category catalogue (3 seed entries)
+      vat-categories.seed.json        # Category catalogue
       invoice-line-evaluation-cases.json  # Golden test cases
 docker/
   ollama/                             # Docker Compose for Ollama (NVIDIA/CUDA)
@@ -185,6 +206,7 @@ Custom commands are available in `.claude/commands/`:
 | `rag-implementer` | Executes an implementation plan step by step |
 | `rag-reviewer` | Reviews a completed RAG implementation |
 | `rag-test-data-writer` | Generates additional test cases for the golden dataset |
+| `rag-eval-tuner` | Diagnoses failing evaluation cases and tunes classifier parameters and category descriptions |
 
 Run a command:
 
@@ -205,6 +227,7 @@ Workspace-level instructions are loaded automatically from `.github/copilot-inst
 | `@rag-implementer` | Execute an implementation plan step by step |
 | `@rag-reviewer` | Review a completed implementation against its spec |
 | `@rag-test-data-writer` | Generate Polish VAT invoice test data |
+| `@rag-eval-tuner` | Diagnose failing evaluation cases and tune classifier parameters and category descriptions |
 
 **Prompt files** — invoke with `/command-name` in Copilot Chat (same workflows, slash-command form):
 
@@ -214,6 +237,7 @@ Workspace-level instructions are loaded automatically from `.github/copilot-inst
 | `/rag-implementer` | Same as the agent above |
 | `/rag-reviewer` | Same as the agent above |
 | `/rag-test-data-writer` | Same as the agent above |
+| `/rag-eval-tuner` | Same as the agent above |
 
 Attach the relevant `instructions/` files for full domain context (Polish VAT, KSeF, project stack).
 

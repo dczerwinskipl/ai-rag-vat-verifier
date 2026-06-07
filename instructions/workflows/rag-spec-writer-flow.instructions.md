@@ -19,7 +19,7 @@ Read and internalize:
 
 1. `CLAUDE.md` — note the current scope, established decisions, and explicit deferrals
 2. `instructions/project/vat-verifier/rag-context.instructions.md` — note the current stack, hardware constraints, and swap-friendliness requirement
-3. Glob `docs/spec/*/` — for each matching directory, extract the two-digit numeric prefix from the directory name (e.g., `01` from `01-init-scaffold`). Next ordinal = highest extracted prefix + 1, zero-padded to two digits. If no directories exist, start at `01`. Do not use the directory count — count-based numbering produces wrong ordinals if any directory was skipped, deleted, or renamed.
+3. Glob `docs/spec/*/` — for each matching directory, extract the two-digit numeric prefix from the directory name (e.g., `01` from `01-init-scaffold`). Next ordinal = highest extracted prefix + 1, zero-padded to at least two digits (e.g., `03`, `10`, `100`). If no directories exist, start at `01`. Do not use the directory count — count-based numbering produces wrong ordinals if any directory was skipped, deleted, or renamed. **After computing, output one visible line: `Next spec ordinal: XX (existing: [list of found prefixes])`** — this is the only way to catch a wrong ordinal before files are written.
 4. Read `src/` files selectively only when the user's topic requires understanding the current implementation (e.g., "improve accuracy of current matcher" → read the evaluator code)
 
 **Minimum output:** Internalized project state. No user-visible output required unless a blocking gap is found.
@@ -116,13 +116,15 @@ This is a hard stop. Do not draft any spec content, diagram, or plan until the u
 
 ## Step 6 — Spec ordinal and slug
 
-Compute from Step 1 context:
+Derive from Step 1 context:
 
-- **Ordinal:** highest two-digit numeric prefix found in existing `docs/spec/*/` directory names + 1, zero-padded (e.g., if `01-init-scaffold` and `02-embedding-classifier` exist, next is `03`). If no directories exist, use `01`. Never derive ordinal from directory count.
+- **Ordinal:** taken from the visible `Next spec ordinal: XX` line output in Step 1. If that line is missing, re-run the Glob now — do not guess. Never derive ordinal from directory count.
 - **Slug:** kebab-case feature name derived from the user's goal (e.g., `naive-rag-generation`, `category-retrieval-with-reranking`)
 - **Spec path:** `docs/spec/<ordinal>-<slug>/`
 
-Confirm path with user in the same message as the spec preview in Step 9 — do not block here.
+**Guard:** if ordinal is `01` but the Step 1 Glob returned any existing directories, stop — the ordinal is wrong. Re-read the Glob output, re-extract prefixes, and recompute before writing anything.
+
+State the final path in chat before writing any file: `Writing to: docs/spec/<ordinal>-<slug>/`
 
 ---
 

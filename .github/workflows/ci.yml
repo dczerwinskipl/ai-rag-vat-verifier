@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  conventions:
+    name: Conventions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Branch name
+        run: |
+          branch="${{ github.head_ref }}"
+          pattern='^(feature|fix|chore)/[a-z0-9][a-z0-9/_-]*$'
+          if ! [[ "$branch" =~ $pattern ]]; then
+            echo "::error::Branch '$branch' must follow: feature/<desc>, fix/<desc>, or chore/<desc>"
+            exit 1
+          fi
+
+      - name: Commit messages
+        run: |
+          pattern='^(feat|fix|chore|docs|refactor|test|ci|build|revert)(\([a-z0-9,/_-]+\))?: .+'
+          failed=0
+          while IFS= read -r msg; do
+            if [[ -z "$msg" ]]; then continue; fi
+            if ! [[ "$msg" =~ $pattern ]]; then
+              echo "::error::Bad commit message: '$msg'"
+              echo "  Expected: <type>(<scope>): <description>"
+              echo "  Types: feat | fix | chore | docs | refactor | test | ci | build | revert"
+              failed=1
+            fi
+          done < <(git log "origin/main..HEAD" --pretty=format:"%s")
+          exit $failed
+
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore tests/VatVerifier.EvaluationTests/VatVerifier.EvaluationTests.csproj
+
+      - name: Build
+        run: dotnet build tests/VatVerifier.EvaluationTests/VatVerifier.EvaluationTests.csproj --no-restore -c Release
+
+      - name: Test
+        run: dotnet test tests/VatVerifier.EvaluationTests/VatVerifier.EvaluationTests.csproj --no-build -c Release --filter "Category!=AI"

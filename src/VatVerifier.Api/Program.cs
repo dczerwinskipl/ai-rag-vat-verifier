@@ -2,8 +2,11 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using OllamaSharp;
 using VatVerifier.Api.Ai;
+using VatVerifier.Api.Classification;
 using VatVerifier.Api.Contracts;
+using VatVerifier.Api.Embeddings;
 using VatVerifier.Api.Evaluation;
+using VatVerifier.Api.Startup;
 
 var builder = WebApplication.CreateBuilder(args);
 

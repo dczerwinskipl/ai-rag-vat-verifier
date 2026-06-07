@@ -1,6 +1,6 @@
 using VatVerifier.Api.Contracts;
 
-namespace VatVerifier.Api.Evaluation;
+namespace VatVerifier.Api.Classification;
 
 public interface ICategoryClassifier
 {
